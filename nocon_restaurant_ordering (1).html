@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --cream: #FAF7F2;
+    --warm-white: #FFFEF9;
+    --brown: #3D2B1F;
+    --brown-light: #6B4C3B;
+    --amber: #C8872A;
+    --amber-light: #E8A84C;
+    --green: #4A7C59;
+    --red: #C0392B;
+    --border: #E8DDD0;
+    --shadow: rgba(61, 43, 31, 0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--brown);
+    min-height: 100vh;
+  }
+
+  .header {
+    background: var(--brown);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-title {
+    font-family: 'Playfair Display', serif;
+    color: var(--amber-light);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .header-subtitle {
+    color: rgba(255,255,255,0.5);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .cart-btn {
+    background: var(--amber);
+    border: none;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+
+  .cart-btn:hover { background: var(--amber-light); transform: translateY(-1px); }
+
+  .cart-badge {
+    background: white;
+    color: var(--amber);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .category-bar {
+    background: var(--warm-white);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+  }
+
+  .cat-btn {
+    background: none;
+    border: none;
+    padding: 14px 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--brown-light);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+  }
+
+  .cat-btn.active { color: var(--amber); border-bottom-color: var(--amber); font-weight: 600; }
+  .cat-btn:hover { color: var(--amber); }
+
+  .main { padding: 24px; max-width: 900px; margin: 0 auto; }
+
+  .section-header {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--brown);
+    margin: 28px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .menu-grid { display: flex; flex-direction: column; gap: 2px; }
+
+  .menu-item {
+    background: var(--warm-white);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+    margin-bottom: 4px;
+  }
+
+  .menu-item:hover { border-color: var(--amber); transform: translateX(4px); box-shadow: 0 4px 16px var(--shadow); }
+  .menu-item.selected { border-color: var(--amber); background: #FFF8EE; }
+
+  .item-img {
+    width: 56px; height: 56px; border-radius: 10px;
+    background: var(--border); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+  }
+
+  .item-info { flex: 1; }
+  .item-name { font-weight: 600; font-size: 15px; color: var(--brown); margin-bottom: 2px; }
+  .item-price { font-size: 13px; color: var(--amber); font-weight: 600; }
+  .item-desc { font-size: 12px; color: var(--brown-light); margin-top: 2px; opacity: 0.8; }
+
+  .item-action { display: flex; align-items: center; gap: 8px; }
+
+  .qty-controls {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--cream); border-radius: 50px; padding: 4px 8px;
+  }
+
+  .qty-btn {
+    background: var(--amber); border: none; color: white;
+    width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
+    font-size: 16px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; line-height: 1;
+  }
+
+  .qty-btn:hover { background: var(--amber-light); transform: scale(1.1); }
+  .qty-btn.minus { background: var(--brown-light); }
+  .qty-btn.minus:hover { background: var(--red); }
+
+  .qty-num { font-weight: 700; font-size: 15px; min-width: 20px; text-align: center; color: var(--brown); }
+
+  .add-btn {
+    background: var(--amber); border: none; color: white;
+    width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+    font-size: 20px; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; font-weight: 300;
+  }
+
+  .add-btn:hover { background: var(--amber-light); transform: scale(1.1); }
+
+  .bottom-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--brown); padding: 14px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 -4px 20px var(--shadow); z-index: 100; transition: all 0.3s;
+  }
+
+  .bottom-bar.hidden { transform: translateY(100%); }
+
+  .bottom-info { color: white; }
+  .bottom-count { font-size: 13px; color: rgba(255,255,255,0.7); }
+  .bottom-total { font-size: 18px; font-weight: 700; color: var(--amber-light); }
+
+  .view-cart-btn {
+    background: var(--amber); border: none; color: white;
+    padding: 12px 24px; border-radius: 50px; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px; transition: all 0.2s;
+  }
+
+  .view-cart-btn:hover { background: var(--amber-light); transform: translateY(-1px); }
+
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    z-index: 200; display: none; align-items: flex-end; justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--warm-white); border-radius: 24px 24px 0 0;
+    width: 100%; max-width: 640px; max-height: 90vh; overflow-y: auto;
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+  .modal-header {
+    padding: 20px 24px 16px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; background: var(--warm-white); z-index: 10;
+  }
+
+  .modal-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--brown); }
+
+  .close-btn {
+    background: var(--border); border: none; width: 32px; height: 32px;
+    border-radius: 50%; cursor: pointer; font-size: 18px; color: var(--brown);
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+  }
+
+  .close-btn:hover { background: var(--brown); color: white; }
+  .modal-body { padding: 20px 24px; }
+
+  .detail-img {
+    width: 100%; height: 200px; border-radius: 16px; margin-bottom: 16px;
+    background: #F5EFE6; display: flex; align-items: center; justify-content: center; font-size: 70px;
+  }
+
+  .detail-price { font-size: 22px; font-weight: 700; color: var(--amber); margin-bottom: 4px; }
+  .detail-label { font-size: 12px; color: var(--brown-light); margin-bottom: 20px; opacity: 0.7; }
+
+  .detail-qty-row {
+    display: flex; align-items: center; justify-content: center;
+    gap: 24px; margin: 24px 0;
+  }
+
+  .detail-qty-btn {
+    background: var(--brown); border: none; color: white;
+    width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
+    font-size: 22px; font-weight: 300;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+  }
+
+  .detail-qty-btn:hover { background: var(--amber); transform: scale(1.05); }
+
+  .detail-qty-num { font-size: 28px; font-weight: 700; color: var(--brown); min-width: 40px; text-align: center; }
+
+  .add-to-cart-btn {
+    width: 100%; background: var(--brown); border: none; color: white;
+    padding: 16px; border-radius: 14px; font-family: 'DM Sans', sans-serif;
+    font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px;
+  }
+
+  .add-to-cart-btn:hover { background: var(--amber); transform: translateY(-1px); }
+
+  .cart-item {
+    background: var(--warm-white); border-radius: 14px; padding: 14px 16px;
+    display: flex; align-items: center; gap: 14px; margin-bottom: 8px; border: 1px solid var(--border);
+  }
+
+  .cart-item-img {
+    width: 50px; height: 50px; border-radius: 8px; background: var(--border);
+    display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;
+  }
+
+  .cart-item-info { flex: 1; }
+  .cart-item-name { font-weight: 600; font-size: 14px; color: var(--brown); }
+  .cart-item-price { font-size: 13px; color: var(--amber); font-weight: 600; margin-top: 2px; }
+
+  .cart-item-controls { display: flex; align-items: center; gap: 8px; }
+
+  .cart-qty-btn {
+    background: var(--cream); border: 1px solid var(--border);
+    width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center; transition: all 0.15s; color: var(--brown);
+  }
+
+  .cart-qty-btn:hover { background: var(--amber); color: white; border-color: var(--amber); }
+
+  .delete-btn {
+    background: none; border: none; color: var(--red); cursor: pointer;
+    padding: 4px 8px; font-size: 18px; transition: all 0.2s; border-radius: 6px;
+  }
+
+  .delete-btn:hover { background: #FFF0EE; transform: scale(1.1); }
+
+  .cart-summary {
+    background: var(--warm-white); border-radius: 14px; padding: 18px;
+    margin-top: 16px; border: 1px solid var(--border);
+  }
+
+  .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: var(--brown-light); }
+
+  .summary-total {
+    display: flex; justify-content: space-between; padding-top: 12px;
+    border-top: 2px solid var(--border); font-size: 17px; font-weight: 700; color: var(--brown); margin-top: 4px;
+  }
+
+  .checkout-btn {
+    width: 100%; background: var(--amber); border: none; color: white;
+    padding: 16px; border-radius: 14px; font-family: 'DM Sans', sans-serif;
+    font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 16px;
+    transition: all 0.2s; letter-spacing: 0.5px;
+  }
+
+  .checkout-btn:hover { background: var(--amber-light); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(200,135,42,0.4); }
+
+  .receipt {
+    background: white; border-radius: 4px; padding: 28px 24px;
+    font-family: 'Courier New', monospace; border: 1px dashed var(--border);
+    max-width: 340px; margin: 0 auto;
+  }
+
+  .receipt-title { text-align: center; font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 900; color: var(--brown); margin-bottom: 4px; }
+  .receipt-sub { text-align: center; font-size: 11px; color: var(--brown-light); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
+  .receipt-divider { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
+  .receipt-info { font-size: 12px; color: var(--brown-light); margin-bottom: 2px; display: flex; justify-content: space-between; }
+  .receipt-item { display: flex; justify-content: space-between; font-size: 13px; color: var(--brown); margin-bottom: 4px; }
+  .receipt-item-detail { font-size: 11px; color: var(--brown-light); margin-bottom: 6px; padding-left: 8px; }
+  .receipt-total { display: flex; justify-content: space-between; font-size: 15px; font-weight: 700; color: var(--brown); margin-top: 4px; }
+  .receipt-thank { text-align: center; margin-top: 16px; font-size: 13px; color: var(--brown-light); font-style: italic; }
+  .receipt-order-num {
+    text-align: center; background: var(--brown); color: var(--amber-light);
+    font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700;
+    padding: 8px; border-radius: 6px; margin: 12px 0; letter-spacing: 2px;
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .empty-cart { text-align: center; padding: 60px 24px; color: var(--brown-light); }
+  .empty-cart .icon { font-size: 60px; margin-bottom: 16px; }
+  .empty-cart h3 { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--brown); margin-bottom: 8px; }
+  .empty-cart p { font-size: 14px; opacity: 0.7; }
+
+  .back-btn {
+    background: none; border: none; color: var(--amber); font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; gap: 6px; padding: 0; margin-bottom: 20px;
+  }
+
+  .back-btn:hover { color: var(--amber-light); }
+
+  .toast {
+    position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+    background: var(--green); color: white; padding: 10px 20px;
+    border-radius: 50px; font-size: 14px; font-weight: 600;
+    z-index: 999; opacity: 0; transition: opacity 0.3s; pointer-events: none;
+  }
+
+  .toast.show { opacity: 1; }
+  .page-body { padding-bottom: 100px; }
+
+  /* ===== FOOTER COPYRIGHT ===== */
+  .footer-copyright {
+    background: var(--brown);
+    text-align: center;
+    padding: 14px 24px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0.5px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .footer-copyright span {
+    color: var(--amber-light);
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title">Nocon Restaurant</div>
+    <div class="header-subtitle">Pilih menu favorit Anda</div>
+  </div>
+  <button class="cart-btn" onclick="showCart()">
+    🛒 Keranjang
+    <span class="cart-badge" id="cartBadge">0</span>
+  </button>
+</div>
+
+<!-- MENU PAGE -->
+<div class="page active" id="menuPage">
+  <div class="category-bar">
+    <button class="cat-btn active" onclick="filterCat('all', this)">Semua</button>
+    <button class="cat-btn" onclick="filterCat('food', this)">🍽 Makanan</button>
+    <button class="cat-btn" onclick="filterCat('drinks', this)">🥤 Minuman</button>
+    <button class="cat-btn" onclick="filterCat('snack', this)">🍦 Snack</button>
+  </div>
+
+  <div class="main page-body" id="menuContainer"></div>
+
+  <div class="footer-copyright">
+    © 2025 <span>Arsyad Faiz</span>. All rights reserved.
+  </div>
+
+  <div class="bottom-bar hidden" id="bottomBar">
+    <div class="bottom-info">
+      <div class="bottom-count" id="bottomCount">0 item</div>
+      <div class="bottom-total" id="bottomTotal">Rp 0</div>
+    </div>
+    <button class="view-cart-btn" onclick="showCart()">Lihat Keranjang →</button>
+  </div>
+</div>
+
+<!-- CART PAGE -->
+<div class="page" id="cartPage">
+  <div class="main page-body">
+    <button class="back-btn" onclick="showMenu()">← Kembali ke Menu</button>
+    <div class="modal-title" style="font-family:'Playfair Display',serif;font-size:24px;margin-bottom:20px;">🛒 Keranjang Saya</div>
+    <div id="cartContent"></div>
+  </div>
+  <div class="footer-copyright">
+    © 2025 <span>Arsyad Faiz</span>. All rights reserved.
+  </div>
+</div>
+
+<!-- RECEIPT PAGE -->
+<div class="page" id="receiptPage">
+  <div class="main page-body">
+    <button class="back-btn" onclick="showMenu()">← Pesan Lagi</button>
+    <div id="receiptContent"></div>
+  </div>
+  <div class="footer-copyright">
+    © 2025 <span>Arsyad Faiz</span>. All rights reserved.
+  </div>
+</div>
+
+<!-- ITEM DETAIL MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="detailTitle">Item</div>
+      <button class="close-btn" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-img" id="detailImg"></div>
+      <div class="detail-price" id="detailPrice"></div>
+      <div class="detail-label">base price</div>
+      <div class="detail-qty-row">
+        <button class="detail-qty-btn" onclick="changeDetailQty(-1)">−</button>
+        <div class="detail-qty-num" id="detailQty">1</div>
+        <button class="detail-qty-btn" onclick="changeDetailQty(1)">+</button>
+      </div>
+      <button class="add-to-cart-btn" onclick="addToCartFromModal()">add to cart</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const menuData = [
+  { id: 1, cat: 'food', name: 'nasi goreng kambing', price: 20000, emoji: '🍛', desc: 'Nasi goreng dengan daging kambing pilihan' },
+  { id: 2, cat: 'food', name: 'nasi goreng spesial', price: 22000, emoji: '🍳', desc: 'Nasi goreng dengan topping lengkap' },
+  { id: 3, cat: 'food', name: 'mie goreng', price: 21000, emoji: '🍜', desc: 'Mie goreng spesial bumbu rahasia' },
+  { id: 4, cat: 'food', name: 'siomay', price: 10000, emoji: '🥟', desc: 'Siomay segar dengan saus kacang' },
+  { id: 5, cat: 'food', name: 'batagor', price: 10000, emoji: '🟤', desc: 'Batagor crispy dengan saus kacang' },
+  { id: 6, cat: 'food', name: 'bakso', price: 15000, emoji: '🍲', desc: 'Bakso sapi dengan kuah kaldu' },
+  { id: 7, cat: 'food', name: 'telor dadar', price: 9000, emoji: '🍳', desc: 'Telor dadar spesial bumbu dapur' },
+  { id: 8, cat: 'drinks', name: 'es teh manis', price: 7000, emoji: '🧊', desc: 'Teh manis dingin menyegarkan' },
+  { id: 9, cat: 'drinks', name: 'es teh lemon', price: 8000, emoji: '🍋', desc: 'Teh dengan perasan lemon segar' },
+  { id: 10, cat: 'drinks', name: 'vanilla milkshake', price: 10000, emoji: '🥛', desc: 'Milkshake vanilla creamy' },
+  { id: 11, cat: 'drinks', name: 'stroberi milkshake', price: 10000, emoji: '🍓', desc: 'Milkshake stroberi segar' },
+  { id: 12, cat: 'drinks', name: 'coklat milkshake', price: 10000, emoji: '🍫', desc: 'Milkshake coklat kaya rasa' },
+  { id: 13, cat: 'drinks', name: 'coca cola', price: 10000, emoji: '🥤', desc: 'Coca cola dingin segar' },
+  { id: 14, cat: 'drinks', name: 'fanta', price: 10000, emoji: '🧃', desc: 'Fanta rasa buah segar' },
+  { id: 15, cat: 'snack', name: 'es krim vanilla', price: 9000, emoji: '🍦', desc: 'Es krim vanilla lembut' },
+  { id: 16, cat: 'snack', name: 'es krim stroberi', price: 9000, emoji: '🍓', desc: 'Es krim stroberi manis' },
+  { id: 17, cat: 'snack', name: 'es krim coklat', price: 9000, emoji: '🍫', desc: 'Es krim coklat rich' },
+];
+
+let cart = {};
+let currentFilter = 'all';
+let detailItemId = null;
+let detailQty = 1;
+
+function fmt(n) { return 'Rp ' + n.toLocaleString('id-ID') + ',00'; }
+
+function renderMenu() {
+  const container = document.getElementById('menuContainer');
+  const filtered = currentFilter === 'all' ? menuData : menuData.filter(i => i.cat === currentFilter);
+  const cats = ['food', 'drinks', 'snack'];
+  const catNames = { food: '🍽 Makanan', drinks: '🥤 Minuman', snack: '🍦 Snack' };
+  let html = '';
+  cats.forEach(cat => {
+    const items = filtered.filter(i => i.cat === cat);
+    if (!items.length) return;
+    html += `<div class="section-header"><span>${catNames[cat]}</span></div><div class="menu-grid">`;
+    items.forEach(item => {
+      const qty = cart[item.id] || 0;
+      html += `
+        <div class="menu-item ${qty > 0 ? 'selected' : ''}" id="menuItem${item.id}">
+          <div class="item-img" onclick="openDetail(${item.id})">${item.emoji}</div>
+          <div class="item-info" onclick="openDetail(${item.id})">
+            <div class="item-name">${item.name}</div>
+            <div class="item-price">${fmt(item.price)}</div>
+            <div class="item-desc">${item.desc}</div>
+          </div>
+          <div class="item-action">
+            ${qty > 0
+              ? `<div class="qty-controls">
+                  <button class="qty-btn minus" onclick="event.stopPropagation();adjustCart(${item.id}, -1)">−</button>
+                  <div class="qty-num">${qty}</div>
+                  <button class="qty-btn" onclick="event.stopPropagation();adjustCart(${item.id}, 1)">+</button>
+                </div>`
+              : `<button class="add-btn" onclick="event.stopPropagation();adjustCart(${item.id}, 1)">+</button>`
+            }
+          </div>
+        </div>`;
+    });
+    html += '</div>';
+  });
+  container.innerHTML = html;
+  updateBottomBar();
+}
+
+function filterCat(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMenu();
+}
+
+function adjustCart(id, delta) {
+  cart[id] = (cart[id] || 0) + delta;
+  if (cart[id] <= 0) delete cart[id];
+  renderMenu();
+  updateCartBadge();
+}
+
+function getCartTotal() {
+  return Object.entries(cart).reduce((sum, [id, qty]) => {
+    const item = menuData.find(i => i.id === parseInt(id));
+    return sum + (item ? item.price * qty : 0);
+  }, 0);
+}
+
+function getCartCount() { return Object.values(cart).reduce((a, b) => a + b, 0); }
+
+function updateCartBadge() { document.getElementById('cartBadge').textContent = getCartCount(); }
+
+function updateBottomBar() {
+  const bar = document.getElementById('bottomBar');
+  const count = getCartCount();
+  if (count > 0) {
+    bar.classList.remove('hidden');
+    document.getElementById('bottomCount').textContent = count + ' item dipilih';
+    document.getElementById('bottomTotal').textContent = fmt(getCartTotal());
+  } else {
+    bar.classList.add('hidden');
+  }
+}
+
+function openDetail(id) {
+  const item = menuData.find(i => i.id === id);
+  detailItemId = id;
+  detailQty = cart[id] || 1;
+  document.getElementById('detailTitle').textContent = item.name;
+  document.getElementById('detailImg').textContent = item.emoji;
+  document.getElementById('detailPrice').textContent = fmt(item.price);
+  document.getElementById('detailQty').textContent = detailQty;
+  document.getElementById('detailModal').classList.add('open');
+}
+
+function changeDetailQty(d) {
+  detailQty = Math.max(1, detailQty + d);
+  document.getElementById('detailQty').textContent = detailQty;
+}
+
+function addToCartFromModal() {
+  cart[detailItemId] = detailQty;
+  closeModal();
+  renderMenu();
+  updateCartBadge();
+  showToast('✓ Ditambahkan ke keranjang!');
+}
+
+function closeModal() { document.getElementById('detailModal').classList.remove('open'); }
+
+document.getElementById('detailModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+function showMenu() {
+  document.getElementById('menuPage').classList.add('active');
+  document.getElementById('cartPage').classList.remove('active');
+  document.getElementById('receiptPage').classList.remove('active');
+  renderMenu();
+}
+
+function showCart() {
+  document.getElementById('menuPage').classList.remove('active');
+  document.getElementById('cartPage').classList.add('active');
+  document.getElementById('receiptPage').classList.remove('active');
+  renderCartPage();
+}
+
+function showReceipt() {
+  document.getElementById('menuPage').classList.remove('active');
+  document.getElementById('cartPage').classList.remove('active');
+  document.getElementById('receiptPage').classList.add('active');
+  renderReceipt();
+}
+
+function renderCartPage() {
+  const container = document.getElementById('cartContent');
+  const count = getCartCount();
+  if (count === 0) {
+    container.innerHTML = `
+      <div class="empty-cart">
+        <div class="icon">🛒</div>
+        <h3>Keranjang Kosong</h3>
+        <p>Belum ada item yang dipilih.<br>Yuk, pilih menu favoritmu!</p>
+      </div>`;
+    return;
+  }
+  let html = '';
+  Object.entries(cart).forEach(([id, qty]) => {
+    const item = menuData.find(i => i.id === parseInt(id));
+    if (!item) return;
+    html += `
+      <div class="cart-item">
+        <div class="cart-item-img">${item.emoji}</div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-price">${fmt(item.price)} × ${qty} = ${fmt(item.price * qty)}</div>
+        </div>
+        <div class="cart-item-controls">
+          <button class="cart-qty-btn" onclick="cartAdjust(${id}, -1)">−</button>
+          <span style="font-weight:700;min-width:24px;text-align:center">${qty}</span>
+          <button class="cart-qty-btn" onclick="cartAdjust(${id}, 1)">+</button>
+          <button class="delete-btn" onclick="removeFromCart(${id})">🗑</button>
+        </div>
+      </div>`;
+  });
+  const subtotal = getCartTotal();
+  const tax = Math.round(subtotal * 0.1);
+  const total = subtotal + tax;
+  html += `
+    <div class="cart-summary">
+      <div class="summary-row"><span>Subtotal</span><span>${fmt(subtotal)}</span></div>
+      <div class="summary-row"><span>Pajak (10%)</span><span>${fmt(tax)}</span></div>
+      <div class="summary-total"><span>Total</span><span style="color:var(--amber)">${fmt(total)}</span></div>
+    </div>
+    <button class="checkout-btn" onclick="checkout()">Checkout →</button>`;
+  container.innerHTML = html;
+  updateCartBadge();
+}
+
+function cartAdjust(id, delta) {
+  cart[id] = (cart[id] || 0) + delta;
+  if (cart[id] <= 0) delete cart[id];
+  renderCartPage();
+  updateCartBadge();
+  updateBottomBar();
+}
+
+function removeFromCart(id) {
+  delete cart[id];
+  renderCartPage();
+  updateCartBadge();
+  updateBottomBar();
+}
+
+function checkout() {
+  if (getCartCount() === 0) return;
+  showReceipt();
+}
+
+function renderReceipt() {
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+  const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  const orderNum = 'ORD-' + String(Math.floor(Math.random() * 9000) + 1000);
+  const subtotal = getCartTotal();
+  const tax = Math.round(subtotal * 0.1);
+  const total = subtotal + tax;
+  let itemRows = '';
+  Object.entries(cart).forEach(([id, qty]) => {
+    const item = menuData.find(i => i.id === parseInt(id));
+    if (!item) return;
+    itemRows += `
+      <div class="receipt-item"><span>${item.name}</span><span>${fmt(item.price * qty)}</span></div>
+      <div class="receipt-item-detail">${qty} × ${fmt(item.price)}</div>`;
+  });
+  document.getElementById('receiptContent').innerHTML = `
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:50px">✅</div>
+      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--brown);margin-top:8px">Pesanan Berhasil!</div>
+      <div style="font-size:14px;color:var(--brown-light);margin-top:4px">Terima kasih telah memesan di Nocon Restaurant</div>
+    </div>
+    <div class="receipt">
+      <div class="receipt-title">NOCON RESTAURANT</div>
+      <div class="receipt-sub">Jl. Raya Kuliner No. 1, Jakarta</div>
+      <div class="receipt-order-num">${orderNum}</div>
+      <hr class="receipt-divider">
+      <div class="receipt-info"><span>Tanggal</span><span>${dateStr}</span></div>
+      <div class="receipt-info"><span>Waktu</span><span>${timeStr}</span></div>
+      <div class="receipt-info"><span>Kasir</span><span>Admin</span></div>
+      <hr class="receipt-divider">
+      ${itemRows}
+      <hr class="receipt-divider">
+      <div class="receipt-item"><span>Subtotal</span><span>${fmt(subtotal)}</span></div>
+      <div class="receipt-item"><span>Pajak (10%)</span><span>${fmt(tax)}</span></div>
+      <hr class="receipt-divider">
+      <div class="receipt-total"><span>TOTAL</span><span>${fmt(total)}</span></div>
+      <hr class="receipt-divider">
+      <div class="receipt-info" style="justify-content:center;font-style:italic;">Pembayaran: Tunai</div>
+      <div class="receipt-thank">Terima kasih & selamat menikmati! 🙏</div>
+      <hr class="receipt-divider">
+      <div style="text-align:center;font-size:10px;color:#aaa;margin-top:8px;">© 2025 Arsyad Faiz</div>
+    </div>
+    <button class="checkout-btn" style="margin-top:20px" onclick="newOrder()">Pesan Lagi</button>
+  `;
+}
+
+function newOrder() {
+  cart = {};
+  showMenu();
+  updateCartBadge();
+  updateBottomBar();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+renderMenu();
+</script>
+</body>
+</html>
